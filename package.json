@@ -17,7 +17,9 @@
     "url": "https://github.com/PineappleRind/genetic-stuff/issues"
   },
   "homepage": "https://github.com/PineappleRind/genetic-stuff#readme",
-  "dependencies": {
-    "typedoc": "^0.22.15"
+  "devDependencies": {
+    "ts-loader": "^9.3.0",
+    "typedoc": "^0.22.15",
+    "webpack": "^5.72.1"
   }
 }
