@@ -1,18 +1,33 @@
-import { Food } from '../types'
+import { Food, GridValue } from '../types'
 import Grid from './grid';
 
 export default class FoodManager {
-    private food: Food[];
-    constructor() {
-        this.food = [];
-    }
     addFood(grid: Grid, amount?: number) {
         amount = amount || 1;
-        this.food.push(new Food())
-        return this
+        for (let i = 0; i < grid.size; i++) {
+            for (let x = 0; x < grid.size; x++) {
+                let coords = [i, x];
+                grid.set(coords, new Food(coords));
+                grid.set(coords, new Food(coords));
+            }
+        }
+        return grid
     }
-    clearFood() {
-        this.food = []
-        return this
+    clearFood(grid: Grid) {
+        grid.grid.forEach((row: [], x: number) => {
+            row.forEach((col: [], y: number) => {
+                col.forEach((v: GridValue) => {
+                    if (v instanceof Food) grid.remove([x, y], v);
+                })
+            })
+        })
+
+        return grid
+    }
+    removeAllFrom(grid: Grid, [x, y]: number[]) {
+        grid.grid[x][y].forEach((v: GridValue) => {
+            if (v.type === 'food') grid = grid.remove([x, y], v);
+        })
+        return grid
     }
 }

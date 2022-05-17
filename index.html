@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <p id="gen"></p>
+    <p id="pop"></p>
+    <p id="deaths"></p>
+    <p id="births"></p>
+    <script src="./dist/index.js"></script>
+    <script>
+        const $ = id => document.querySelector(id);
+        const sim = new Simulation.default({
+            time: 1000,
+            genes: [
+                {
+                    name: 'generous',
+                    values: {
+                        giving: 0.5
+                    }
+                }
+            ],
+            startPopulation: 2
+        })
+            .addListener('population', (data) => $(`#pop`).innerHTML = data.population)
+            .addListener('death', (data) => $(`#deaths`).innerHTML = data.deaths + ' deaths this generation')
+            .addListener('birth', (data) => $(`#births`).innerHTML = data.births + ' births this generation')
+            .addListener('move', (data) => console.log(`${data.person.id} moved to ${data.coords}`))
+            .addListener('food', (food) => console.log(`${food} food was consumed`))
+            .addListener('tick', (tick) => $('#gen').innerHTML = (`Generation ${tick}`));
+
+        sim.begin();
+    </script>
+</body>
+
+</html>

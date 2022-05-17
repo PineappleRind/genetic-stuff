@@ -3,13 +3,12 @@ class Food {
         x: number;
         y: number;
     }
-    size: number;
-    constructor() {
+    type: string = 'food'
+    constructor([x,y]: number[]) {
         this.location = {
-            x: Math.floor(Math.random() * 100),
-            y: Math.floor(Math.random() * 100)
+            x: x,
+            y: y
         };
-        this.size = Math.floor(Math.random() * 2);
         return this
     }
 }
@@ -28,11 +27,17 @@ interface Gene {
 class Person {
     id: number;
     genes: Gene[];
+    type: string = 'person'
+    location: {
+        x: number;
+        y: number;
+    }
     constructor(id: number, genes: Gene[]) {
         this.id = id;
         this.genes = genes || [];
     }
 }
-type SimulationEvent = 'gift' | 'birth' | 'death' | 'tick';
+type SimulationEvent = 'gift' | 'population' | 'tick' | 'food' | 'move' | 'death' | 'birth';
+type GridValue = Person | Food;
 
-export { Gene, Food, SimulationOptions, Person, SimulationEvent };
+export { Gene, Food, SimulationOptions, Person, SimulationEvent, GridValue };

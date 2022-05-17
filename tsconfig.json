@@ -2,5 +2,11 @@
     "compilerOptions": {
         "target": "es3",
         "lib": ["es5", "dom"],
-    }
+    },
+    "files": [
+        "./src/managers/simulation.ts",
+        "./src/types.ts",
+        "./src/helpers/food.ts",
+        "./src/helpers/grid.ts"
+    ]
 }
