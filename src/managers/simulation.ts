@@ -46,6 +46,12 @@ export default class Simulation {
         clearInterval(this.genInterval);
         return this
     }
+    /**
+     * Gets the current grid status.
+     */
+    getGrid(): Grid {
+        return this.grid;
+    }
     protected nextGen(): void {
         let { dispatchEvent, food, grid, population } = this;
         this.tick++;

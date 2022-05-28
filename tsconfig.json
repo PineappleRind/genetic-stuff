@@ -1,7 +1,8 @@
 {
     "compilerOptions": {
         "target": "es3",
-        "lib": ["es5", "dom"],
+        "outDir": "./build",
+        "lib": ["es5", "dom"]
     },
     "files": [
         "./src/managers/simulation.ts",

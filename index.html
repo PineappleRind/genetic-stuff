@@ -13,7 +13,7 @@
     <p id="pop"></p>
     <p id="deaths"></p>
     <p id="births"></p>
-    <script src="./dist/index.js"></script>
+    <script src="./build/dist/index.js"></script>
     <script>
         const $ = id => document.querySelector(id);
         const sim = new Simulation.default({
@@ -33,9 +33,17 @@
             .addListener('birth', (data) => $(`#births`).innerHTML = data.births + ' births this generation')
             .addListener('move', (data) => console.log(`${data.person.id} moved to ${data.coords}`))
             .addListener('food', (food) => console.log(`${food} food was consumed`))
-            .addListener('tick', (tick) => $('#gen').innerHTML = (`Generation ${tick}`));
+            .addListener('tick', (tick) => {
+                $('#gen').innerHTML = (`Generation ${tick}`)
+                let grid = sim.getGrid();
+                renderGrid(grid);
+            });
 
         sim.begin();
+
+        function renderGrid(grid) {
+            console.log(grid)
+        }
     </script>
 </body>
 
