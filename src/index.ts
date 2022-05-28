@@ -1,6 +1,5 @@
-import { Person, SimulationOptions, SimulationEvent, Gene, Food } from '../types';
-import FoodManager from '../helpers/food';
-import Grid from '../helpers/grid';
+import { Person, SimulationOptions, SimulationEvent, Gene, Food } from './types';
+import Grid from './GridManager';
 /**
  * @param {SimulationOptions} options
  * @returns {Simulation}
@@ -11,7 +10,6 @@ export default class Simulation {
     genes: Gene[] = []
     private genInterval: any;
     protected grid: Grid;
-    protected food: FoodManager;
     protected tick: number;
     protected events: {
         [key: string]: Function
@@ -25,8 +23,7 @@ export default class Simulation {
         if (options.startPopulation) {
             this.population = Array.from({ length: options.startPopulation }, (_v, i): Person => new Person(i, this.genes));
         }
-        this.grid = new Grid(options.gridSize || 100);
-        this.food = new FoodManager();
+        this.grid = new Grid(options.gridSize || 30);
         this.tickStep = 1000 || options.time;
         return this;
     }
@@ -53,33 +50,17 @@ export default class Simulation {
         return this.grid;
     }
     protected nextGen(): void {
-        let { dispatchEvent, food, grid, population } = this;
+        let { dispatchEvent, grid, population } = this;
         this.tick++;
         dispatchEvent('tick', this.tick);
-        grid = food.addFood(food.clearFood(grid), population.length);
+        grid.init()
         let births = 0, deaths = 0
         population.forEach(person => {
-            let randomCoords = [Math.floor(Math.random() * this.grid.size), Math.floor(Math.random() * this.grid.size)];
-            if (grid.countPeople(randomCoords) > 0) return;
-            grid.set(randomCoords, person);
-            console.log(grid[randomCoords[0], randomCoords[1]]);
-            dispatchEvent('move', { coords: randomCoords, person: person });
-            const foodIntake = grid.consumeFood(randomCoords, person);
-            dispatchEvent('food', foodIntake);
-            grid = food.removeAllFrom(grid, randomCoords);
-            if (foodIntake === 2) {
-                const newPerson = new Person(population.length, person.genes);
-                this.population.push(newPerson);
-                dispatchEvent('population', { population: this.population.length });
-                dispatchEvent('birth', {births: births++});
-            } else if (foodIntake === 0) {
-                this.population.splice(this.population.indexOf(person), 1);
-                dispatchEvent('population', { population: this.population.length });
-                dispatchEvent('death', {deaths: deaths++});
-            }
+            // Get random coordinates per person
+            let xy = [Math.floor(Math.random() * this.grid.size), Math.floor(Math.random() * this.grid.size)];
+            
             return
         })
-        grid = grid.removeAllPeople()
     }
     /**
      * Add an event listener.

@@ -6,6 +6,51 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <style>
+        /* The grid*/
+        #grid {
+            height: 100vh;
+            width: 100vw;
+            position: fixed;
+            overflow: scroll;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            display: flex;
+            flex-direction: column;
+            background-color: #f1f1f1;
+        }
+
+        .row {
+            display: flex
+        }
+
+        .cell {
+            display: flex;
+            align-items: center;
+            justify-content: space-evenly;
+            background-color: #f1f1f1;
+            border: 1px solid #ccc;
+            padding: 10px;
+            height: 60px;
+            width: 100%;
+            font-size: 20px;
+            text-align: center;
+        }
+
+        .food,
+        .person {
+            background-color: #ff6464;
+            width: 10px;
+            height: 10px;
+            font-size: 20px;
+            text-align: center;
+        }
+
+        .person {
+            background-color: #6464ff;
+        }
+    </style>
 </head>
 
 <body>
@@ -13,11 +58,12 @@
     <p id="pop"></p>
     <p id="deaths"></p>
     <p id="births"></p>
-    <script src="./build/dist/index.js"></script>
+    <div id="grid"></div>
+    <script src="./build/bundle.js"></script>
     <script>
         const $ = id => document.querySelector(id);
-        const sim = new Simulation.default({
-            time: 1000,
+        const sim = new Simulation({
+            time: 2000,
             genes: [
                 {
                     name: 'generous',
@@ -26,24 +72,50 @@
                     }
                 }
             ],
+            gridSize: 10,
             startPopulation: 2
         })
             .addListener('population', (data) => $(`#pop`).innerHTML = data.population)
             .addListener('death', (data) => $(`#deaths`).innerHTML = data.deaths + ' deaths this generation')
             .addListener('birth', (data) => $(`#births`).innerHTML = data.births + ' births this generation')
-            .addListener('move', (data) => console.log(`${data.person.id} moved to ${data.coords}`))
-            .addListener('food', (food) => console.log(`${food} food was consumed`))
             .addListener('tick', (tick) => {
                 $('#gen').innerHTML = (`Generation ${tick}`)
                 let grid = sim.getGrid();
                 renderGrid(grid);
+                if (tick > 10) {
+                    sim.stop();
+                }
             });
 
         sim.begin();
 
         function renderGrid(grid) {
-            console.log(grid)
+            let html = '';
+            grid = grid.data
+            console.log(grid.length)
+            for (let i = 0; i < grid.length; i++) {
+                // For each row
+                let row = grid[i]
+                console.log(grid[i].length)
+                // Render a row on the grid
+                html += '<div class="row">'
+                row.forEach(cell => {
+                    // For each cell
+                    // Render a cell on the grid
+                    html += '<div class="cell">'
+                    // Each cell is an array of Food | Person objects
+                    // So loop through those:
+                    for (let j = 0; j < cell; j++) {
+                        html += `<div class="food"></div>`
+                    }
+                    html += '</div>'
+                })
+                html += '</div>'
+
+            }
+            $('#grid').innerHTML = html;
         }
+
     </script>
 </body>
 

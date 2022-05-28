@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/PineappleRind/genetic-stuff#readme",
   "devDependencies": {
+    "@rollup/plugin-typescript": "^8.3.2",
     "rollup": "^2.75.1",
     "ts-loader": "^9.3.0",
     "typedoc": "^0.22.15",

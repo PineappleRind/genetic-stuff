@@ -3,7 +3,6 @@ class Food {
         x: number;
         y: number;
     }
-    type: string = 'food'
     constructor([x,y]: number[]) {
         this.location = {
             x: x,
