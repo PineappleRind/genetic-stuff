@@ -11,18 +11,6 @@ class Food {
         return this
     }
 }
-interface SimulationOptions {
-    gridSize?: number;
-    time: number;
-    genes?: Gene[];
-    startPopulation?: number;
-}
-interface Gene {
-    name: string;
-    values: {
-        [key: string]: number;
-    };
-}
 class Person {
     id: number;
     genes: Gene[];
@@ -36,6 +24,20 @@ class Person {
         this.genes = genes || [];
     }
 }
+
+interface SimulationOptions {
+    gridSize?: number;
+    time: number;
+    genes?: Gene[];
+    startPopulation?: number;
+}
+interface Gene {
+    name: string;
+    values: {
+        [key: string]: number;
+    };
+}
+
 type SimulationEvent = 'gift' | 'population' | 'tick' | 'food' | 'move' | 'death' | 'birth';
 type GridValue = Person | Food;
 
