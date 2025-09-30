@@ -24,7 +24,7 @@ export default class Simulation {
             this.population = Array.from({ length: options.startPopulation }, (_v, i): Person => new Person(i, this.genes));
         }
         this.grid = new Grid(options.gridSize || 30);
-        this.tickStep = 1000 || options.time;
+        this.tickStep = options.time || 1000;
         return this;
     }
     /**

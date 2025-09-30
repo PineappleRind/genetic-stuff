@@ -1,89 +1,134 @@
+// src/types.ts
 class Person {
-    constructor(id, genes) {
-        this.type = 'person';
-        this.id = id;
-        this.genes = genes || [];
-    }
+  id;
+  genes;
+  type = "person";
+  location;
+  constructor(id, genes) {
+    this.id = id;
+    this.genes = genes || [];
+  }
+}
+
+// src/GridManager.ts
+var GridCellFlags = {
+  default: 0,
+  food: 1,
+  person: 4
+};
+
+class GridCell {
+  content;
+  constructor() {
+    this.content = 0;
+  }
+  has = (type) => this.content & GridCellFlags[type];
+  remove = (type, amt) => {
+    if (amt > 2)
+      return this.remove(type, 2);
+    this.content &= ~(GridCellFlags[type] * amt);
+    return this;
+  };
+  add = (type, amt) => {
+    if (amt > 2)
+      return this.add(type, 2);
+    this.content |= GridCellFlags[type] * amt;
+    return this;
+  };
+  reset = () => {
+    this.content = 0;
+    return this;
+  };
 }
 
 class Grid {
-    constructor(size) {
-        this.add = ([x, y], amt) => {
-            this.data[x][y] += (amt || 1);
-            return this;
-        };
-        this.remove = ([x, y], amt) => {
-            this.data[x][y] -= (amt || 1);
-            return this;
-        };
-        this.get = ([x, y]) => {
-            return this.data[x][y];
-        };
-        this.init = () => {
-            return Array.from(Array(this.size), () => Array(this.size).fill(0));
-        };
-        this.size = size;
-        this.data = this.init();
+  size;
+  data;
+  foodLocations;
+  constructor(size) {
+    this.size = size;
+    this.data = this.init();
+  }
+  add = ([x, y], type, amt) => {
+    return this.data[x][y].add(type === 1 ? "person" : "food", amt);
+  };
+  remove = ([x, y], amt) => {
+    this.data[x][y].remove("person", amt);
+    return this;
+  };
+  get = ([x, y]) => {
+    return this.data[x][y];
+  };
+  findFood = () => {
+    return this.foodLocations.shift();
+  };
+  init = () => {
+    return Array.from(Array(this.size), () => Array(this.size).fill(new GridCell));
+  };
+  fillGrid = (amt) => {
+    for (let i = 0;i < amt; i++) {
+      let [rx, ry] = [
+        Math.floor(Math.random() * this.data[0].length),
+        Math.floor(Math.random() * this.data.length)
+      ];
+      if (this.data[rx][ry].has("food"))
+        i--;
+      else
+        this.data[rx][ry].add("food", 1);
     }
+  };
 }
 
-/**
- * @param {SimulationOptions} options
- * @returns {Simulation}
- */
+// src/index.ts
 class Simulation {
-    constructor(options) {
-        this.population = [];
-        this.genes = [];
-        /**
-         * Add an event listener.
-         * @param event The event to listen for. Valid events are `birth`, `death`, `age`, `tick`, and `gift`.
-         * @param callback The callback to execute when the event is triggered.
-         */
-        this.addListener = (event, callback) => { this.events[event] = callback; return this; };
-        this.dispatchEvent = (event, data) => this.events[event] ? this.events[event](data) : false;
-        this.tick = 0;
-        this.population = [];
-        this.genes = options.genes || [];
-        this.events = {};
-        if (options.startPopulation) {
-            this.population = Array.from({ length: options.startPopulation }, (_v, i) => new Person(i, this.genes));
-        }
-        this.grid = new Grid(options.gridSize || 30);
-        this.tickStep = 1000 ;
-        return this;
+  tickStep;
+  population = [];
+  genes = [];
+  genInterval;
+  grid;
+  tick;
+  events;
+  constructor(options) {
+    this.tick = 0;
+    this.population = [];
+    this.genes = options.genes || [];
+    this.events = {};
+    if (options.startPopulation) {
+      this.population = Array.from({ length: options.startPopulation }, (_v, i) => new Person(i, this.genes));
     }
-    /**
-     * Begins the simulation. This will run until the `stop` method is called.
-     * @returns {Simulation}
-     */
-    begin() {
-        this.nextGen();
-        this.genInterval = setInterval(() => this.nextGen(), this.tickStep);
-        return this;
-    }
-    /**
-     * Stops the simulation.
-     */
-    stop() {
-        clearInterval(this.genInterval);
-        return this;
-    }
-    /**
-     * Gets the current grid status.
-     */
-    getGrid() {
-        return this.grid;
-    }
-    nextGen() {
-        let { dispatchEvent, grid, population } = this;
-        this.tick++;
-        dispatchEvent('tick', this.tick);
-        grid.init();
-        population.forEach(person => {
-            // Get random coordinates per person
-            [Math.floor(Math.random() * this.grid.size), Math.floor(Math.random() * this.grid.size)];
-            return;
-        });
-    }
+    this.grid = new Grid(options.gridSize || 30);
+    this.tickStep = 1000;
+    return this;
+  }
+  begin() {
+    this.nextGen();
+    this.genInterval = setInterval(() => this.nextGen(), this.tickStep);
+    return this;
+  }
+  stop() {
+    clearInterval(this.genInterval);
+    return this;
+  }
+  getGrid() {
+    return this.grid;
+  }
+  nextGen() {
+    let { dispatchEvent, grid, population } = this;
+    this.tick++;
+    dispatchEvent("tick", this.tick);
+    grid.init();
+    let births = 0, deaths = 0;
+    population.forEach((person) => {
+      let xy = [Math.floor(Math.random() * this.grid.size), Math.floor(Math.random() * this.grid.size)];
+      return;
+    });
+  }
+  addListener = (event, callback) => {
+    this.events[event] = callback;
+    return this;
+  };
+  dispatchEvent = (event, data) => this.events[event] ? this.events[event](data) : false;
 }
+export {
+  Simulation as default
+};
